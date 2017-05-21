@@ -25,10 +25,10 @@ def init(max_attempts=3):
     logged_in = False
     attempts = 0
 
-    print "Log in to Google Music."
+    print("Log in to Google Music.")
 
     while not logged_in and attempts < max_attempts:
-        email = raw_input("Email: ")
+        email = input("Email: ")
         password = getpass()
 
         logged_in = api.login(email, password)
@@ -50,7 +50,7 @@ def guess_encoding(filename):
 def main():
     
     if not len(sys.argv) == 2:
-        print "usage:", sys.argv[0], "<playlist file>"
+        print("usage:", sys.argv[0], "<playlist file>")
         sys.exit(0)
 
     #The three md_ lists define the format of the playlist and how matching should be done against the library.
@@ -86,41 +86,41 @@ def main():
     api = init()
 
     if not api.is_authenticated():
-        print "Failed to log in."
+        print("Failed to log in.")
         sys.exit(0)
     
-    print "Loading library from Google Music..."
+    print("Loading library from Google Music...")
     library = api.get_all_songs()
 
-    print "Matching songs..."
+    print("Matching songs...")
 
     matcher = gm_tools.SongMatcher(library)
     
     matched_songs = matcher.match(queries)
 
-    res = raw_input("Output matches to file or terminal? (f/t): ")
+    res = input("Output matches to file or terminal? (f/t): ")
 
     if res == "t":
-        print matcher.build_log()
+        print(matcher.build_log())
     elif res == "f":
-        res = raw_input("Filename to write to: ")
+        res = input("Filename to write to: ")
         with open(res, mode='w') as f:
             f.write(matcher.build_log())
-        print "File written."
+        print("File written.")
 
 
 
-    go = raw_input("Create playlist from these matches? (y/n): ")
+    go = input("Create playlist from these matches? (y/n): ")
     if go == "y":
-        name = raw_input("playlist name: ")
+        name = input("playlist name: ")
         p_id = api.create_playlist(name)
 
-        print "Made playlist", name
+        print("Made playlist", name)
 
         
         res = api.add_songs_to_playlist(p_id, 
-                                map(gm_tools.filter_song_md, matched_songs))
-        print "Added songs."
+                                list(map(gm_tools.filter_song_md, matched_songs)))
+        print("Added songs.")
 
 if __name__ == '__main__':
     main()
